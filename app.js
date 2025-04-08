@@ -345,6 +345,48 @@ app.get('/cart', async(req,res)=>{
     }
   })
 
+ //task-10 create route to delete in cart
+ app.delete('/cart/product/delete',async(req,res)=>{
+    try{
+        const {productID} = req.body;
+        const {token} = req.headers;
+        const decodedToken = jwt.verify(token, "supersecret");
+        const user = await User.findOne({email:decodedToken.email}).populate("cart");
+        if(!user){
+            return res.status(404).json({
+                message: "User not found"
+            })
+        }
+        const cart = await Cart.findById(user.cart).populate("products");
+        if(!cart){
+            return res.status(404).json({
+                message: "Cart not found"
+            })
+        }
+        const productIndex = cart.products.findIndex(
+            (product)=> product._id.toString() === productID
+        )
+        if(productIndex === -1){
+            return res.status(404).json({
+               message: "product not found in cart" 
+            })
+        }
+        cart.products.splice(productIndex, 1);
+        cart.total = cart.products.reduce(
+            (total, product)=> total + product.price,
+            0
+        );
+        await cart.save();
+        return res.status(200).json({
+            message:"Product deleted from cart successfully",
+            cart: cart
+        })
+    }catch(error) {
+      res.status(400).json({
+        message: "Internal Server Error",
+      });
+    }
+  })
 
 
 
