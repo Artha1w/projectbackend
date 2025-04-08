@@ -14,7 +14,7 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 
-mongoose.connect('mongodb://127.0.0.1:27017/arthaEcomm')
+mongoose.connect('mongodb+srv://arthabagi62:VcSvOKuBNe0ytWAh@cluster0.fedxc3b.mongodb.net/?retryWrites=true&w=majority&')
 .then(()=>{
     console.log("db is connected")
 })
